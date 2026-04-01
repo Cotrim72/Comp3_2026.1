@@ -12,7 +12,7 @@ class PilhaInt {
         PilhaInt(int capacity = 10){
             this->capacity = capacity;
             Pointer_tab = (int*) malloc( capacity * sizeof(int) );
-            // if (!arr) { perror("malloc"); return 1; }
+            if (!Pointer_tab) { perror("malloc"); exit(1); }
 
             for(int i = 0; i < capacity; i++){
                 Pointer_tab[i] = 0;
@@ -33,36 +33,37 @@ class PilhaInt {
 
         }
         
-        int capacidade(){
+        const int capacidade(){
             return capacity;
         }
 
         void redimensiona(int n){
-            if (capacity < n){
-                int* tmp = (int*) realloc( Pointer_tab, n * sizeof(int) );
-                //if (!tmp) { perror("realloc"); free(Pointer_tab); return 1; }
-                Pointer_tab = tmp;
-            }
-            else if (capacity > n && tamanho > n){
+            if (capacity > n && tamanho > n){
                 while (tamanho > n){
                     desempilha();
                 }
             }
             capacity = n;
+            int* tmp = (int*) realloc( Pointer_tab, capacity * sizeof(int) );
+            if (!tmp) { perror("realloc"); free(Pointer_tab); exit(1); };
+            Pointer_tab = tmp;
         }
         
         void empilha (int valor){
             if (tamanho == capacity) {
             capacity *= 2;
             int* tmp = (int*) realloc( Pointer_tab, capacity * sizeof(int) );
-            //if (!tmp) { perror("realloc"); free(Pointer_tab); return 1; }
+            if (!tmp) { perror("realloc"); free(Pointer_tab); exit(1); }
             Pointer_tab = tmp;
             }
             Pointer_tab[tamanho++] = valor; 
         }
         
         int desempilha(){
-            return Pointer_tab[--tamanho];
+            if(tamanho > 0){
+                return Pointer_tab[--tamanho];
+            }
+            return 0;
         }
         
         void print(std::ostream& o) {
