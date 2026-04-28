@@ -1,9 +1,10 @@
 #include <initializer_list>
 #include <iostream>
+#include <memory>
 
 using namespace std;
 
-class AbstractPair{ // Classe Abstrata de Pair que irá apontar para a classe Implementação
+class AbstractPair{ 
     public:
         virtual void imprime(std::ostream& o){
         };
@@ -12,11 +13,11 @@ class AbstractPair{ // Classe Abstrata de Pair que irá apontar para a classe Im
 };
 
 template <class A, class B>
-class ImplPair : public AbstractPair{ // Classe de implementação na qual será uma classe template para suportar os diferentes tipos 
+class ImplPair : public AbstractPair{ 
     A first;
     B second;
     public:
-        ImplPair(A a, B b): first(a), second(b){
+        ImplPair(const A& a, const B& b): first(a), second(b){
         }
 
         void imprime(std::ostream& o){
@@ -28,21 +29,20 @@ class ImplPair : public AbstractPair{ // Classe de implementação na qual será
 class Pair {
 public:
   template <typename A, typename B>
-  Pair( A a, B b ) { // Classe Pair
-    p = new ImplPair<A, B>(a, b);
+  Pair( A a, B b ) { 
+    p = shared_ptr<AbstractPair>{new ImplPair<A, B>(a, b)};
   }
   void print(std::ostream& o) const {
         if (p) p->imprime(o);
     } 
 private:
-  AbstractPair *p;
+    shared_ptr<AbstractPair> p;
 };
 
 
 void print( ostream& o, initializer_list<Pair> lista ) {
-    for (auto x:lista){
+    for (const auto& x:lista){
         x.print(o);
-        o << endl;
     }
 }
 
